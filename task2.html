@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/nullstyle.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<title>task2</title>
+	</head>
+	<body>
+		<main class="page">
+			<div class="page__container">
+				<div class="task">
+					<div class="task__condition text">Задача 3. Об’єкт “Фірма” (використати члени-класи)</div>
+				</div>
+				<script>
+					//назва фірми;
+					//дата заснування (рік, місяць);
+					//послуги (назва послуги, вартість, термін виконання);
+					//адреси філіалів (країна, місто, вулиця, номер будинку);
+					//введене користувачем місто для виведенння всіх філіанів
+					//введений користувачем темін часу дії п ослуги
+					// кількість грошей у користувача
+					class Firm {
+						#userMoney
+						#userTime
+						constructor(inintFirmName, initDateOfCreating, adresses, services, userCity, userMoney, userTime) {
+							this.firmName = inintFirmName
+							//Дата заснування
+							this.dateOfCreating = initDateOfCreating
+							//послуги
+							this.services = services
+							// адреси філфалів
+							this.adressesOfBranches = adresses
+							// місот яке ввів користувач
+							this.userCity = userCity
+							// гроші користувача
+							this.UserMoney = userMoney
+							// час користувача
+							this.UserTime = userTime
+						}
+						//перевіряємо чи коректо введені гроші
+						get UserMoney() {
+							return this.#userMoney
+						}
+						set UserMoney(money) {
+							if (money < 0) throw new Error("некоректно введені гроші")
+							this.#userMoney = money
+						}
+						//перевіряємо чи коректно введений час
+						get UserTime() {
+							return this.#userTime
+						}
+						set UserTime(time) {
+							if (time < 0) throw new Error("некоректно введений час")
+							this.#userTime = time
+						}
+						//=========================================
+						//знаходимо вік фірм
+						getAgeOfTheFirm() {
+							let curYear = new Date().getFullYear()
+							return curYear - this.dateOfCreating.CreatingYear
+						}
+						// всі філіани у конкретному місті
+						getAllBranchesInSomeCity() {
+							let newBranches = this.adressesOfBranches.filter((adress) => adress.city === this.userCity)
+							if (newBranches.length < 1) return -1
+							else return newBranches
+						}
+						// послуги які доступні користувачу
+						getAvailableServices() {
+							let availableServices = this.services.filter((service) => service.ServiceDuration <= this.UserTime && service.ServiceCost <= this.UserMoney)
+							if (availableServices.length < 1) throw new Error("вам не доступні послуги")
+							else return availableServices
+						}
+						toString() {
+							let ageOfTheFirm = this.getAgeOfTheFirm()
+							document.write(`фірма існує ${ageOfTheFirm} років <br/> `)
+							//===========================
+							let brances = this.getAllBranchesInSomeCity()
+							if (brances === -1) document.write("філіалів у задаму місті немає <br/>")
+							else {
+								for (const branch of brances) {
+									document.write(`країна ${branch.country} , місто ${branch.city} , вулиця ${branch.street} , номер будинку ${branch.HousNumber} <br/>`)
+								}
+							}
+							//=================================================
+							let availableServices = this.getAvailableServices()
+							for (const service of availableServices) {
+								document.write(`тип послуги: ${service.serviceName} , ціна послуги: ${service.ServiceCost}$, тривалість послуги ${service.ServiceDuration} год <br/>`)
+							}
+						}
+					}
+					//=========================================
+					//=========================================
+					//створення дати заснування
+					class DateOfCreating {
+						#creatingYear
+						#creatingMouth
+						constructor(creatingYear, creatingMouth) {
+							this.CreatingYear = creatingYear
+							this.CreatingMouth = creatingMouth
+						}
+						get CreatingYear() {
+							return this.#creatingYear
+						}
+						get CreatingMouth() {
+							return this.#creatingMouth
+						}
+						set CreatingYear(year) {
+							let curYear = new Date().getFullYear()
+							if (year < 1000 || year > curYear) throw new Error("Рік створення не коректний")
+							this.#creatingYear = year
+						}
+						set CreatingMouth(mounth) {
+							if (mounth < 1 || mounth > 12) throw new Error("Місяць створення не коректний")
+							this.#creatingMouth = mounth
+						}
+					}
+					let dateOfCreating = new DateOfCreating(2006, 5)
+					//=======================================
+					//створення послуги
+					class Sersice {
+						#serviceCost
+						#serviceDuration
+						constructor(serviceName, serviceCost, serviceDuration) {
+							this.serviceName = serviceName
+							this.ServiceCost = serviceCost
+							this.ServiceDuration = serviceDuration
+						}
+						get ServiceCost() {
+							return this.#serviceCost
+						}
+						get ServiceDuration() {
+							return this.#serviceDuration
+						}
+						// перевіряєм правильність ціни
+						set ServiceCost(cost) {
+							if (cost < 0) throw new Error("ціна вказана не правильно")
+							this.#serviceCost = cost
+						}
+						// перевірка правильності тривалості аослуги
+						set ServiceDuration(duration) {
+							if (duration < 1) throw new Error("тривалість не коректна")
+							this.#serviceDuration = duration
+						}
+					}
+					let services = [new Sersice("repair", 60, 6), new Sersice("consultation", 10, 1), new Sersice("maintenance", 40, 48), new Sersice("teaching", 470, 190)]
+
+					//================================
+					//створення адреси
+					class Adress {
+						#housNumber
+						constructor(country, city, street, housNum) {
+							this.country = country
+							this.city = city
+							this.street = street
+							this.HousNumber = housNum
+						}
+						get HousNumber() {
+							return this.#housNumber
+						}
+						set HousNumber(num) {
+							if (num < 1 || num > 5000) throw new Error("номер будинку введено не коректно")
+							this.#housNumber = num
+						}
+					}
+					let adresses = [
+						new Adress("Uk", "London", "green", 1),
+						new Adress("Uk", "London", "blue", 9),
+						new Adress("Ua", "Kiyiv", "red", 64),
+						new Adress("Pl", "Katowice", "Mytna", "101-a"),
+						new Adress("Uk", "London", "Spacious", 1),
+					]
+					// користувач вказує кошти
+					let userMoney = parseInt(prompt("Введіть суму грошей "))
+					// користувач вказує термін дії послуги
+					let userTime = parseInt(prompt("Введіть скільки у вас часу у годинах "))
+					//користувач вводить місто
+					let userCity = prompt(`Введіть місто    підсказка(${adresses[0].city},${adresses[3].city})`)
+					//фірма
+					let firm = new Firm("Favorite", dateOfCreating, adresses, services, userCity, userMoney, userTime)
+					console.log(`${firm}`)
+				</script>
+			</div>
+		</main>
+	</body>
+</html>

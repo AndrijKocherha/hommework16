@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/nullstyle.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<title>task0</title>
+	</head>
+	<body>
+		<main class="page">
+			<div class="page__container">
+				<div class="task">
+					<div class="task__condition text">
+						Задача 1. Створити клас TDate для роботи із датами у форматі “день.місяць.рік”. Дата представляється структурою із трьома полями. Реалізувати методи
+						збільшення/зменшення дати на певну кількість днів, місяців чи років. Введення та виведення дати реалізувати за допомогою методу toString.
+					</div>
+				</div>
+				<script>
+					//     ( / ) цей знак я зрозумів як або
+					class TDate {
+						#year
+						#mounth
+						#day
+						constructor(initYear, initMounth, initDay) {
+							this.Day = initDay
+							this.Mounth = initMounth
+							this.Year = initYear
+						}
+
+						get Year() {
+							return this.#year
+						}
+						//перевірка на високсність
+						getKnowlageLipYearOrNo() {
+							if (this.Year % 4 === 0) return true
+							else return false
+						}
+						set Year(defaultYear) {
+							if (defaultYear < 1) throw new Error("Рік не коректний")
+							this.#year = defaultYear
+						}
+						//================================
+						get Mounth() {
+							return this.#mounth
+						}
+						// перевірка правильності Місяця за замовчуванням
+						set Mounth(defaultMounth) {
+							if (defaultMounth < 1 || defaultMounth > 12) throw new Error("Місяць не коректний")
+							this.#mounth = defaultMounth
+						}
+						//=================================
+						//=========ЗНАХОДЖЕННЯ МАКСИМАЛЬНОГО ДНЯ В МІСЯЦІ З УРАХУВАННЯМ ВИСОКОСНОГО РОКУ
+						getMaxDayInMounth(mounth) {
+							let maxDay
+							if (mounth === 2) {
+								if (this.getKnowlageLipYearOrNo() === false) maxDay = 28
+								else maxDay = 29
+							} else {
+								switch (mounth) {
+									case 1:
+									case 3:
+									case 5:
+									case 7:
+									case 8:
+									case 10:
+									case 12:
+										maxDay = 31
+										break
+									case 4:
+									case 6:
+									case 9:
+									case 10:
+									case 11:
+										maxDay = 30
+										break
+								}
+							}
+							return maxDay
+						}
+						get Day() {
+							return this.#day
+						}
+						// враховував високосний рік і те що  уньому у лютому 29 днів
+						set Day(defaultDay) {
+							let minDay = 1
+							let maxDay = this.getMaxDayInMounth(this.Mounth)
+							if (defaultDay < minDay || defaultDay > maxDay) throw new Error("Некоректний день")
+							this.#day = defaultDay
+						}
+						// повернення результатів
+						toString() {
+							return `${this.Day} .${this.Mounth} . ${this.Year}`
+						}
+						//============ДОДАВАННЯ==========
+						//Додвання днів
+						plusDay(userPlusDay) {
+							let newDays = this.Day + userPlusDay
+							let mouthNew = this.Mounth
+							for (let i = newDays; i > this.getMaxDayInMounth(mouthNew); ) {
+								i -= this.getMaxDayInMounth(mouthNew)
+								newDays = i
+								mouthNew++
+								if (mouthNew > 12) {
+									mouthNew = 1
+									this.Year += 1
+									this.getKnowlageLipYearOrNo()
+								}
+							}
+							this.Mounth = mouthNew
+							this.Day = newDays
+						}
+						//Додвання місяців
+						plusMounths(userPlusMounth) {
+							let curMaxDay = this.getMaxDayInMounth(this.Mounth)
+							let newMounth = this.Mounth + userPlusMounth
+							if (newMounth > 12) {
+								this.Year += Math.floor(newMounth / 12)
+								this.Mounth = newMounth %= 12
+							} else {
+								this.Mounth = newMounth
+							}
+							let newMaxDay = this.getMaxDayInMounth(this.Mounth)
+							if (this.Day === curMaxDay) {
+								if (newMaxDay < curMaxDay) {
+									this.Mounth += 1
+									this.Day = curMaxDay - newMaxDay
+								}
+							}
+						}
+						plusYears(userPlusYear) {
+							let newYear = this.Year + userPlusYear
+							if (this.getKnowlageLipYearOrNo(this.Year) === true && this.Day === this.getMaxDayInMounth(this.Mounth) && newYear % 4 !== 0) {
+								this.Mounth += 1
+								this.Day = 1
+							} else this.Year = newYear
+						}
+						//=======================================
+					}
+
+					// перша дата без додавання або віднімання
+					let userYear = parseInt(prompt("Введіть початковий рік"))
+					let userMounth = parseInt(prompt("Введіть початковий місяць"))
+					let userDay = parseInt(prompt("Введіть початковий день"))
+					let someData = new TDate(userYear, userMounth, userDay)
+					document.write(`${someData}  <br/>`)
+					//===============================
+					// кажем користувачу додати
+					let userPlusDay = parseInt(prompt("Введіть скільки ви хочете додати днів"))
+					let userPlusMounth = parseInt(prompt("Введіть скільки ви хочете додати Місяців"))
+					let userPlusYear = parseInt(prompt("Введіть скільки ви хочете додати років"))
+					someData.plusDay(userPlusDay)
+					someData.plusMounths(userPlusMounth)
+					someData.plusYears(userPlusYear)
+
+					document.write(`до додвання ${someData}`)
+					console.log(`після додвання ${someData}`)
+				</script>
+			</div>
+		</main>
+	</body>
+</html>

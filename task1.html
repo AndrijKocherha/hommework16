@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/nullstyle.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<title>task1</title>
+	</head>
+	<body>
+		<main class="page">
+			<div class="page__container">
+				<div class="task">
+					<div class="task__condition text">
+						Задача 2. Створити клас TMoney для роботи з грошовими сумами. Сума повинна зберігатися у вигляді доларового еквіваленту. Реалізувати методи
+						додавання/вилучення грошової маси, вказуючи необхідну суму у гривнях, та визначення курсу долара, при якому сума у гривнях збільшиться на 100. Курс долара
+						зберігати в окремому полі.
+					</div>
+				</div>
+				<script>
+					class TMoney {
+						#dolarRate
+						#dolarBalance
+						#sumOnWichBalanceMustIncreas
+						#userPlusSum
+						#userMinusSum
+						constructor(initialDolarRote, initialSum, sumOnWichBalanceMustIncreas, userPlusSum, userMinusSum) {
+							this.DolarRate = initialDolarRote
+							this.DolarBalance = initialSum
+							this.SumOnWichBalanceMustIncreas = sumOnWichBalanceMustIncreas
+							this.UserPlusBalace = userPlusSum
+							this.UserMinusBalace = userMinusSum
+						}
+						// отримати курсу долара
+						get DolarRate() {
+							return this.#dolarRate
+						}
+						// перевірити чи курс правильний
+						set DolarRate(exchangeRate) {
+							if (exchangeRate < 1 || exchangeRate > 500 || exchangeRate === NaN) throw new Error("Курс введено не правильно")
+							this.#dolarRate = exchangeRate
+						}
+						//====================================================
+						// отримати баланс у гривнях
+						get DolarBalance() {
+							return this.#dolarBalance * this.DolarRate
+						}
+						// додати до балансу у гривнях а перевести в долари
+						set DolarBalance(grivnasCount) {
+							if (grivnasCount < 1 || grivnasCount === NaN) throw new Error("ви не можете ввести стартовий баланс")
+							this.#dolarBalance = (grivnasCount / this.DolarRate).toFixed(2) * 1
+						}
+						//=================================================
+						//Получти суму на яку мусить вирости баланс
+						get SumOnWichBalanceMustIncreas() {
+							return this.#sumOnWichBalanceMustIncreas
+						}
+						set SumOnWichBalanceMustIncreas(sumToIncres) {
+							if (sumToIncres < 1 || sumToIncres === NaN) throw new Error("не коректна сума на яку можна збільшити баланс")
+							this.#sumOnWichBalanceMustIncreas = sumToIncres
+						}
+						//=================================================
+						//функція підрахування курсу долара при якому банас збільшить на 100 грн
+						getDolarRateToIncreasGrivnasBalenceOn100(sumToIncreas) {
+							let newDolarRate = (this.DolarRate * (this.DolarBalance + sumToIncreas)) / this.DolarBalance
+							return newDolarRate.toFixed(2) * 1
+						}
+						//============================================
+						//фунція перевірки чи правильно введені дані щодо збільшення банасу
+						get UserPlusBalace() {
+							return this.#userPlusSum
+						}
+						set UserPlusBalace(sum) {
+							if (sum < 1 || sum === NaN) throw new Error("cуму для додавання введено не правильно")
+							this.#userPlusSum = sum
+						}
+						addSum() {
+							this.DolarBalance += this.UserPlusBalace
+						}
+						//==========================================
+						//фунція перевірки чи правильно введені дані щодо зменшення банасу
+						get UserMinusBalace() {
+							return this.#userMinusSum
+						}
+						set UserMinusBalace(sum) {
+							if (sum < 1 || sum === NaN) throw new Error("cуму для віднімання введено не правильно")
+							this.#userMinusSum = sum
+						}
+						reduceSum() {
+							this.DolarBalance -= this.UserMinusBalace
+						}
+						// функція виведення
+						toString() {
+							return `ваш баланс ${this.DolarBalance} <br/> курс при якому би бланс збільшиться на 100₴ =  ${this.getDolarRateToIncreasGrivnasBalenceOn100(
+								this.SumOnWichBalanceMustIncreas
+							).toFixed(2)}`
+							//============================================
+						}
+					}
+					let curentDolarRate = parseInt(prompt("введіть вартість 1$ в гривнях"))
+					let userStartBalace = parseInt(prompt("Введіть ваш стартовий банас у ₴"))
+					let userIncreasBalance = parseInt(prompt("Введіть суму для збіьшення балансу у ₴"))
+					let usercDecreasBalance = parseInt(prompt("Введіть суму для зменшення балансу у ₴"))
+					let bank = new TMoney(curentDolarRate, userStartBalace, 100, userIncreasBalance, usercDecreasBalance)
+					document.write(` ${bank} <br/>`)
+					// збільшуємо баланс
+					bank.addSum()
+					document.write(`збільшеня балансу: ${bank} <br/>`)
+					//зменшуємо баланс
+					bank.reduceSum()
+					document.write(`${bank} <br/>`)
+				</script>
+			</div>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/nullstyle.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<title>task3</title>
+	</head>
+	<body>
+		<main class="page">
+			<div class="page__container">
+				<div class="task">
+					<div class="task__condition text">
+						Задача. Створити клас TBankomat, який моделює роботу банкомата. Клас повинен містити поля для зберігання кількості купюр кожного із номіналів від 5 до 200
+						гривень. Реалізувати методи знаходження максимальної та мінімальної сум, які може видати банкомат, та метод зняття деякої суми.
+					</div>
+				</div>
+				<script>
+					// створити обєкит з усіма купюрами їх кількістями та назвою (обєкт загальний а у ньому обєкти це виггідно для подальшого знаходження суми та макс )
+					//передвти його у косструктор
+					//фунція знаходження мін
+					//функція  знаходження максимальної
+					// функція зняття грошей (з урахуваням того що у банкоматі немає купюр номінало м 2 та 1 гривня)
+					// !!!!===============================================================
+					// всі купюри та їх кількості
+
+					class Bill {
+						#billCount
+						#billType
+						constructor(billCount, billType) {
+							this.BillCount = billCount
+							this.BillType = billType
+							this.billObj = {
+								count: this.BillCount,
+								bill: this.BillType,
+							}
+						}
+						get BillCount() {
+							return this.#billCount
+						}
+						set BillCount(count) {
+							if (count < 0) throw new Error("cant be minus count")
+							this.#billCount = count
+						}
+						//==========
+						get BillType() {
+							return this.#billType
+						}
+						set BillType(type) {
+							if (type < 5 || type > 200 || type % 5 !== 0) throw new Error("Atm can has only 5, 10 ,20, 50, 100,200 UAH")
+							this.#billType = type
+						}
+					}
+
+					let allBills = [
+						new Bill(1, 5).billObj,
+						new Bill(2, 10).billObj,
+						new Bill(1, 20).billObj,
+						new Bill(1, 50).billObj,
+						new Bill(2, 100).billObj,
+						new Bill(0, 200).billObj,
+					]
+					//=============================
+					class TBankomat {
+						constructor(allBills) {
+							this.allBills = allBills
+						}
+						// знаходження мін
+						getMinBill() {
+							let allBills = this.allBills
+							for (const billObj of allBills) {
+								if (billObj.count > 0) {
+									return billObj.bill
+								}
+							}
+							throw new Error("Atm has no money")
+						}
+						// знаходження макс
+						getMaxBill() {
+							//цей  варіант мені здався хоч і довший по запису але кращий бо можна почати з кінця і вирогідність того що кінцева кюпюра є велика
+							let allBills = this.allBills
+							for (let i = allBills.length - 1; i >= 0; i--) {
+								if (allBills[i].count > 0) {
+									return allBills[i].bill
+								}
+							}
+							throw new Error("Atm has no money")
+							//варіант 2 через reduce ()
+							//let maxBill = allBills.reduce((prevMaxBill, billItem) => (billItem.count > 0 ? (prevMaxBill = billItem) : prevMaxBill))
+							//return maxBill.bill
+						}
+						//функція знаходження всіх грошей
+						getAllSum() {
+							return this.allBills.reduce((prevSum, billObj) => prevSum + billObj.count * billObj.bill, 0)
+						}
+						takeSum(userSum) {
+							let allBills = JSON.parse(JSON.stringify(this.allBills))
+							let overalSum = this.getAllSum()
+							if (userSum > overalSum) throw new Error("in ATM there is no such sum")
+							else {
+								for (let i = allBills.length - 1; i >= 0; i--) {
+									while (allBills[i].count > 0 && allBills[i].bill <= userSum) {
+										allBills[i].count -= 1
+										userSum -= allBills[i].bill
+									}
+								}
+							}
+							if (userSum > 0) {
+								throw new Error(`You can't get such a sum cause ATM doasn't has ${userSum}₴ `)
+							} else {
+								alert("sum has been taken successfully")
+								this.allBills = allBills
+							}
+						}
+						toString() {
+							let maxSum = this.getMaxBill()
+							let minSum = this.getMinBill()
+							return `максимальна сума ${maxSum}</br> мінімальна сума ${minSum}`
+						}
+					}
+					let atm = new TBankomat(allBills)
+					document.write(`${atm}`)
+					let userSum = parseInt(prompt("enter the sum"))
+					atm.takeSum(userSum)
+				</script>
+			</div>
+		</main>
+	</body>
+</html>
